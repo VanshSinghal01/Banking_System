@@ -3,16 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import './App.css';
 import logo from './account3.png';
 import '@fortawesome/fontawesome-free/css/all.css';
-import { arr } from './arr';
 
 const Withdraw = () => {
   const [account1, setAccount1] = useState(''); 
   const [initial, setInitial] = useState('');
   const [validationMessage, setValidationMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
-  const money = () => {
+  const money = async () => {
     setValidationMessage('');
 
     if (!account1 || !initial) {
@@ -20,33 +20,49 @@ const Withdraw = () => {
       return;
     }
 
-    const acc1 = arr.find(acc => acc.accountNumber === account1);
+    setLoading(true);
 
+    try {
+      const response = await fetch('http://localhost:3500/withdraw', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          accountNumber: account1,
+          amount: initial
+        })
+      });
 
-    if (!acc1) {
-      setValidationMessage('Invalid account number.');
-      return;
+      const data = await response.json();
+
+      if (!response.ok) {
+        setValidationMessage(data.message || 'Withdrawal failed.');
+      } else {
+        setValidationMessage(`✅ ${data.message}`);
+        setAccount1('');
+        setInitial('');
+
+        // Optional: small timeout before navigating
+        setTimeout(() => navigate('/Dashboard'), 1500);
+      }
+    } catch (err) {
+      console.error('Withdraw Error:', err);
+      setValidationMessage('Something went wrong. Please try again.');
     }
 
-    acc1.initialAmount =parseInt(acc1.initialAmount)-parseInt(initial);
-
-    setValidationMessage('Successful!');
-
-    setAccount1('');
-    setInitial('');
-
-    navigate('/Dashboard');
+    setLoading(false);
   };
 
   return (
     <div>
-      <h1 className='ho'>Create Your <span>New</span> Account!</h1>
-      <div className='header'>
+     <h1 className='ho'>Create Your <span>New</span> Account!</h1>
+       <div className='header'>
         <div className='main1'>
           <img src={logo} className='imga1' alt="Logo" />
           <div className='heado1'>
             <h1>Welcome</h1>
-            <span>Send Money to BFF</span>
+            <span>Withdraw Safely</span>
 
             <div className='head-1'>
               <input
@@ -68,13 +84,15 @@ const Withdraw = () => {
 
             {validationMessage && <p className='validation-message'>{validationMessage}</p>}
 
-            <button className='butt' onClick={money}>Withdraw</button>
+            <button className='butt' onClick={money} disabled={loading}>
+              {loading ? 'Processing...' : 'Withdraw'}
+            </button>
             <button className='butt1' onClick={() => navigate('/Dashboard')}>Back to Dashboard</button>
           </div>
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default Withdraw;

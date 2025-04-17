@@ -2,12 +2,17 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
 import logo from './otpimg.png';
-import { arr } from './arr'; // Importing the global `arr` object
+import { arr } from './arr';
 
 const OtpVerificationPage = () => {
   const [otp, setOtp] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [countdown, setCountdown] = useState(5);
+
+
+
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -15,7 +20,7 @@ const OtpVerificationPage = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('https://backend-bankingsystem.onrender.com/datasave', {
+      const response = await fetch('http://localhost:3500/datasave', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -29,17 +34,21 @@ const OtpVerificationPage = () => {
           Age: arr.Age,
           ACcountNO: arr.ACcountNO,
           Amount: arr.Amount,
-          AccType: arr.AccType, 
+          AccType: arr.AccType,
         }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        setMessage('OTP verified successfully! Data saved.');
+        setShowPopup(true);
+        const timer = setInterval(() => {
+          setCountdown((prev) => prev - 1);
+        }, 1000);
         setTimeout(() => {
-          navigate('/dashboard');
-        }, 2000);
+          clearInterval(timer);
+          navigate('/');
+        }, 5000);
       } else {
         setMessage(data.message || 'OTP is incorrect');
       }
@@ -72,7 +81,20 @@ const OtpVerificationPage = () => {
             <button onClick={handleSubmit} disabled={loading} className="butt">
               {loading ? 'Verifying...' : 'Submit'}
             </button>
+            <button className='butt1' onClick={() => navigate('/signin')}>Back</button>
             {message && <p className="validation-message">{message}</p>}
+
+            {showPopup && (
+              <div className="popup-overlay">
+                <div className="popup-box">
+                  <h2>🎉 Account Created!</h2>
+                  <p>You’ll be redirected to the login page in</p>
+                  <div className="countdown"><p>Redirecting to login in {countdown} Seconds...</p></div>
+                </div>
+              </div>
+            )}
+
+
           </div>
         </div>
       </div>

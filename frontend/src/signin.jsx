@@ -63,7 +63,7 @@ function CreateAccount() {
     console.log('Data stored in arr:', arr);
 
     // Send data to the backend
-    fetch('https://backend-bankingsystem.onrender.com/emailsend', {
+    fetch('http://localhost:3500/emailsend', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

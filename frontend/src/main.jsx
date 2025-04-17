@@ -7,6 +7,7 @@ import Deposite from './Deposite.jsx';
 import Sign from './signin.jsx'
 import OtpVerificationPage from './Otppage.jsx';
 import Withdraw from './Withdraw.jsx';
+import ConfirmOtp from './confirmOtp.jsx';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
 let data= createBrowserRouter([
@@ -32,6 +33,10 @@ let data= createBrowserRouter([
   },{
     path:'/OtpVerificationPage',
     element:<OtpVerificationPage/>
+  },
+  {
+    path:'/confirmOtp',
+    element:<ConfirmOtp/>
   }
 ])
 

@@ -3,17 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import './App.css';
 import logo from './account3.png';
 import '@fortawesome/fontawesome-free/css/all.css';
-import { arr } from './arr';
 
 const Deposite = () => {
-  const [account1, setAccount1] = useState(''); 
+  const [account1, setAccount1] = useState('');
   const [account2, setAccount2] = useState('');
   const [initial, setInitial] = useState('');
   const [validationMessage, setValidationMessage] = useState('');
-
   const navigate = useNavigate();
 
-  const money = () => {
+  const handleSend = async () => {
     setValidationMessage('');
 
     if (!account1 || !account2 || !initial) {
@@ -21,30 +19,32 @@ const Deposite = () => {
       return;
     }
 
-    const acc1 = arr.find(acc => acc.accountNumber === account1);
-    const acc2 = arr.find(acc => acc.accountNumber === account2);
+    try {
+      // Step 1: Send OTP to sender's email using fetch
+      const response = await fetch('http://localhost:3500/deposit-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ senderAccount: account1 }),
+      });
 
+      if (!response.ok) {
+        throw new Error('Failed to send OTP');
+      }
 
-    if (!acc1 || !acc2) {
-      setValidationMessage('Invalid account number.');
-      return;
+      // Step 2: Navigate to confirm OTP page with transfer details
+      navigate('/confirmOtp', {
+        state: {
+          senderAccount: account1,
+          recipientAccount: account2,
+          amount: parseInt(initial),
+        }
+      });
+    } catch (error) {
+      console.error('Error sending OTP:', error);
+      setValidationMessage(error.message || 'Failed to send OTP');
     }
-
-    if (acc1.balance <initial) {
-      setValidationMessage('Insufficient balance in Account-1.');
-      return;
-    }
-
-    acc1.initialAmount =parseInt(acc1.initialAmount)-parseInt(initial);
-    acc2.initialAmount = parseInt(acc2.initialAmount)+parseInt(initial);
-
-    setValidationMessage('Transaction successful!');
-
-    setAccount1('');
-    setAccount2('');
-    setInitial('');
-
-    navigate('/Dashboard');
   };
 
   return (
@@ -60,7 +60,7 @@ const Deposite = () => {
             <div className='head-1'>
               <input
                 type='text'
-                placeholder='Account-1 Number'
+                placeholder='Sender Account Number'
                 onChange={(e) => setAccount1(e.target.value)}
                 value={account1}
               />
@@ -69,11 +69,12 @@ const Deposite = () => {
             <div className='head-2'>
               <input
                 type='text'
-                placeholder='Account-2 Number'
+                placeholder='Recipient Account Number'
                 onChange={(e) => setAccount2(e.target.value)}
                 value={account2}
               />
             </div>
+
             <div className='head-2'>
               <input
                 type='text'
@@ -85,13 +86,13 @@ const Deposite = () => {
 
             {validationMessage && <p className='validation-message'>{validationMessage}</p>}
 
-            <button className='butt' onClick={money}>Send</button>
+            <button className='butt' onClick={handleSend}>Transfer</button>
             <button className='butt1' onClick={() => navigate('/Dashboard')}>Back to Dashboard</button>
           </div>
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default Deposite;
