@@ -17,7 +17,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('https://backend-bankingsystem.onrender.com/');
+        const response = await fetch('https://bankbackend-mp91.onrender.com/');
         const data = await response.json();
         setAccountData(data);
         const userAccounts = data.filter(acc => acc.Email.toLowerCase() === userData?.email?.toLowerCase());
