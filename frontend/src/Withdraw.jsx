@@ -23,7 +23,7 @@ const Withdraw = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:3500/withdraw', {
+      const response = await fetch('https://backend-bankingsystem.onrender.com/withdraw', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
