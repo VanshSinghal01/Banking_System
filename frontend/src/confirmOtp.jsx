@@ -24,7 +24,7 @@ const ConfirmOtp = () => {
     }
 
     try {
-      const response = await fetch('https://bankbackend-mp91.onrender.com/deposit', {
+      const response = await fetch('https://bankbackend-cbkp.onrender.com/deposit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

@@ -21,7 +21,7 @@ const Deposite = () => {
 
     try {
       // Step 1: Send OTP to sender's email using fetch
-      const response = await fetch('https://bankbackend-mp91.onrender.com/deposit-otp', {
+      const response = await fetch('https://bankbackend-cbkp.onrender.com/deposit-otp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

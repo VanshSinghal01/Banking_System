@@ -20,7 +20,7 @@ const OtpVerificationPage = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('https://bankbackend-mp91.onrender.com/datasave', {
+      const response = await fetch('https://bankbackend-cbkp.onrender.com/datasave', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
